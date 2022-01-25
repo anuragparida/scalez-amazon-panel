@@ -37,7 +37,7 @@ function App() {
     
       var new_params = {...params, "jwt_new" : Cookies.get("jwt_new")}
 
-    console.log(new_params);
+    // console.log(new_params);
 
     axios
       .post(server + "/scrape", new_params, { withCredentials: true })
