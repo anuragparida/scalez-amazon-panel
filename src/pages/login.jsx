@@ -23,11 +23,34 @@ function Login() {
       .filter((el) => el.name)
       .reduce((a, b) => ({ ...a, [b.name]: b.value }), {});
 
+      // withCredentials: true
+
+
+      // const response = await fetch(server + "/login", {
+      //       method: 'POST',
+      //       headers: {'Content-Type': 'application/json'},
+      //       credentials: 'include',
+      //       body: JSON.stringify(params)
+      //   });
+
+      //   const rsp = await response.json();
+      //   console.log(rsp)
+      //   Cookies.set("jwt_new", rsp.jwt_new);
+      //   window.location.href = "/analysis";
+
+
+      axios.defaults.withCredentials = true
     axios
-      .post(server + "/login", params)
+      .post(server + "/login", params, {withCredentials: true})
       .then((rsp) => {
-        Cookies.set("jwt", rsp.data.jwt);
-        Cookies.set("tokenDate", new Date());
+        console.log(rsp)
+        Cookies.set("jwt_new", rsp.data.jwt_new);
+        // const cookie = Cookies.get();
+        // console.log(cookie);
+        
+        // Cookies.set("jwt", cookie.jwt);
+        // Cookies.set("tokenDate", new Date());
+        // console.log("response",rsp)
         window.location.href = "/analysis";
       })
       .catch((err) => {

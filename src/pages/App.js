@@ -24,6 +24,7 @@ import {
 import axios from "axios";
 import { server, config } from "../env";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 function App() {
   const [data, setData] = useState([]);
@@ -33,11 +34,13 @@ function App() {
     var params = Array.from(e.target.elements)
       .filter((el) => el.name)
       .reduce((a, b) => ({ ...a, [b.name]: b.value }), {});
+    
+      var new_params = {...params, "jwt_new" : Cookies.get("jwt_new")}
 
-    console.log(params);
+    console.log(new_params);
 
     axios
-      .post(server + "/scrape", params, config)
+      .post(server + "/scrape", new_params, { withCredentials: true })
       .then((rsp) => {
         console.log(rsp.data);
         setData(rsp.data);

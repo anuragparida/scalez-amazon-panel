@@ -2,12 +2,13 @@ const Cookies = require("js-cookie");
 
 module.exports = {
   server: "http://143.110.181.191/api",
+  // server: "localhost:8000/api",
 
   config: {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${Cookies.get("jwt")}`,
-      Cookie: `jwt=${Cookies.get("jwt")}`,
+      Cookie: `jwt_new=${Cookies.get("jwt_new")}`,
     },
   },
 

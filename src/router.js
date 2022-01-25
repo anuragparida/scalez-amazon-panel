@@ -17,7 +17,7 @@ export default function Router() {
     Cookies.remove("tokenDate");
   }
 
-  const token = Cookies.get("jwt");
+  const token = Cookies.get("jwt_new");
   let loggedIn = false;
 
   if (token) {
