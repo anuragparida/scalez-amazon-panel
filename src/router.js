@@ -13,7 +13,7 @@ export default function Router() {
     tokenDate === null ||
     isNaN(tokenDate)
   ) {
-    Cookies.remove("jwt");
+    Cookies.remove("jwt_new");
     Cookies.remove("tokenDate");
   }
 
@@ -28,9 +28,7 @@ export default function Router() {
       <Switch>
         {loggedIn ? (
           <>
-            <Route path="/analysis" component={App} />
-            <Route path="/login" component={Login} />
-            <Route path="/" component={Login} />
+            <Route path="/" component={App} />
           </>
         ) : (
           <>

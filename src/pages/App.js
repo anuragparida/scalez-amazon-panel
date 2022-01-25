@@ -20,33 +20,47 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { server, config } from "../env";
 import { useState } from "react";
 import Cookies from "js-cookie";
+import { PieChart } from "react-minimal-pie-chart";
 
 function App() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(false);
   const scrape = async (e) => {
     e.preventDefault();
 
     var params = Array.from(e.target.elements)
       .filter((el) => el.name)
       .reduce((a, b) => ({ ...a, [b.name]: b.value }), {});
-    
-      var new_params = {...params, "jwt_new" : Cookies.get("jwt_new")}
+
+    var new_params = { ...params, jwt_new: Cookies.get("jwt_new") };
 
     // console.log(new_params);
+
+    setLoading(true);
 
     axios
       .post(server + "/scrape", new_params, { withCredentials: true })
       .then((rsp) => {
         console.log(rsp.data);
         setData(rsp.data);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err.response);
+        setLoading(false);
       });
   };
 
@@ -89,7 +103,13 @@ function App() {
               </FormControl>
             </GridItem> */}
               <GridItem colSpan={2}>
-                <Button type="submit" size="lg" w="full" colorScheme="teal">
+                <Button
+                  type="submit"
+                  size="lg"
+                  w="full"
+                  colorScheme="teal"
+                  isLoading={loading}
+                >
                   Analyse
                 </Button>
               </GridItem>
@@ -112,88 +132,98 @@ function App() {
 
             <TabPanels>
               <TabPanel>
-                <VStack alignItems="flex-start" spacing={3}>
-                  <Heading size="2xl">Your cart</Heading>
-                  <Text>
-                    If the price is too hard on your eyes,{" "}
-                    <Button variant="link" colorScheme="black">
-                      try changing the theme.
-                    </Button>
-                  </Text>
+                <VStack alignItems="flex-start" spacing={5}>
+                  <Heading size="xl">Overall Sentiment</Heading>
+                  {/* <Text>Total Reviews: {data.length}</Text> */}
+                  {Object.keys(data).length !== 0 ? (
+                    <PieChart
+                      data={[
+                        {
+                          title: "Negative",
+                          value: Math.round(data.tally[0] * 100) / 100,
+                          color: "#D2222D",
+                        },
+                        {
+                          title: "Neutral",
+                          value: Math.round(data.tally[1] * 100) / 100,
+                          color: "#FFBF00",
+                        },
+                        {
+                          title: "Positive",
+                          value: Math.round(data.tally[2] * 100) / 100,
+                          color: "#238823",
+                        },
+                      ]}
+                      style={{ height: "300px" }}
+                      label={({ dataEntry }) =>
+                        `${dataEntry.title}: ${dataEntry.value}%`
+                      }
+                      labelStyle={(index) => ({
+                        // fill: ["#D2222D", "#FFBF00", "#238823"][index],
+                        fill: "#000",
+                        fontSize: "5px",
+                        fontFamily: "sans-serif",
+                      })}
+                      radius={42}
+                      labelPosition={112}
+                    />
+                  ) : loading ? (
+                    <Text>Calculating, please wait...</Text>
+                  ) : (
+                    <Text>Enter a product link to analyse.</Text>
+                  )}
                 </VStack>
-                <HStack spacing={6} alignItems="center" w="full">
-                  <AspectRatio ratio={1} w={24}>
-                    <Image src="/images/skateboard.jpg" alt="Skateboard" />
-                  </AspectRatio>
-                  <Stack
-                    spacing={0}
-                    w="full"
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <VStack w="full" spacing={0} alignItems="flex-start">
-                      <Heading size="md">Penny board</Heading>
-                      <Text color="gray.600">PNYCOMP27541</Text>
-                    </VStack>
-                    <Heading size="sm" textAlign="end">
-                      $119.00
-                    </Heading>
-                  </Stack>
-                </HStack>
-                <VStack spacing={4} alignItems="stretch" w="full">
-                  <HStack justifyContent="space-between">
-                    <Text color="gray.600">Taxes (estimated)</Text>
-                    <Heading size="sm">$23.80</Heading>
-                  </HStack>
-                </VStack>
-                <Divider />
-                <HStack justifyContent="space-between" w="full">
-                  <Text color="gray.600">Total</Text>
-                  <Heading size="lg">$162.79</Heading>
-                </HStack>
               </TabPanel>
               <TabPanel>
-                <VStack alignItems="flex-start" spacing={3}>
-                  <Heading size="2xl">Your cart</Heading>
-                  <Text>
-                    If the price is too hard on your eyes,{" "}
-                    <Button variant="link" colorScheme="black">
-                      try changing the theme.
-                    </Button>
-                  </Text>
+                <VStack alignItems="flex-start" spacing={5}>
+                  <Heading size="xl">Essence and Keywords</Heading>
+                  {/* <Text>Total Reviews: {data.length}</Text> */}
+                  {Object.keys(data).length !== 0 ? (
+                    <Table variant="simple">
+                      <TableCaption>Keyword Analysis</TableCaption>
+                      <Thead>
+                        <Tr>
+                          <Th>Positive</Th>
+                          <Th>Neutral</Th>
+                          <Th>Negative</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {Array(
+                          Math.max(
+                            data["Positive"].keywords.length,
+                            data["Neutral"].keywords.length,
+                            data["Negative"].keywords.length
+                          )
+                        )
+                          .fill()
+                          .map((e, i) => (
+                            <Tr>
+                              <Td>
+                                {data["Positive"].keywords[i]
+                                  ? `${data["Positive"].keywords[i][0]} (${data["Positive"].keywords[i][1]})`
+                                  : ""}
+                              </Td>
+                              <Td>
+                                {data["Neutral"].keywords[i]
+                                  ? `${data["Neutral"].keywords[i][0]} (${data["Neutral"].keywords[i][1]})`
+                                  : ""}
+                              </Td>
+                              <Td>
+                                {data["Negative"].keywords[i]
+                                  ? `${data["Negative"].keywords[i][0]} (${data["Negative"].keywords[i][1]})`
+                                  : ""}
+                              </Td>
+                            </Tr>
+                          ))}
+                      </Tbody>
+                    </Table>
+                  ) : loading ? (
+                    <Text>Calculating, please wait...</Text>
+                  ) : (
+                    <Text>Enter a product link to analyse.</Text>
+                  )}
                 </VStack>
-                <HStack spacing={6} alignItems="center" w="full">
-                  <AspectRatio ratio={1} w={24}>
-                    <Image src="/images/skateboard.jpg" alt="Skateboard" />
-                  </AspectRatio>
-                  <Stack
-                    spacing={0}
-                    w="full"
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <VStack w="full" spacing={0} alignItems="flex-start">
-                      <Heading size="md">Penny board</Heading>
-                      <Text color="gray.600">PNYCOMP27541</Text>
-                    </VStack>
-                    <Heading size="sm" textAlign="end">
-                      $119.00
-                    </Heading>
-                  </Stack>
-                </HStack>
-                <VStack spacing={4} alignItems="stretch" w="full">
-                  <HStack justifyContent="space-between">
-                    <Text color="gray.600">Taxes (estimated)</Text>
-                    <Heading size="sm">$23.80</Heading>
-                  </HStack>
-                </VStack>
-                <Divider />
-                <HStack justifyContent="space-between" w="full">
-                  <Text color="gray.600">Total</Text>
-                  <Heading size="lg">$162.79</Heading>
-                </HStack>
               </TabPanel>
             </TabPanels>
           </Tabs>

@@ -49,7 +49,7 @@ function Login() {
         // console.log(cookie);
         
         // Cookies.set("jwt", cookie.jwt);
-        // Cookies.set("tokenDate", new Date());
+        Cookies.set("tokenDate", new Date());
         // console.log("response",rsp)
         window.location.href = "/analysis";
       })
