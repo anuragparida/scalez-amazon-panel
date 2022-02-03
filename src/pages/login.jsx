@@ -51,7 +51,7 @@ function Login() {
         // Cookies.set("jwt", cookie.jwt);
         Cookies.set("tokenDate", new Date());
         // console.log("response",rsp)
-        window.location.href = "/analysis";
+        window.location.href = "/";
       })
       .catch((err) => {
         console.log(err.response);
