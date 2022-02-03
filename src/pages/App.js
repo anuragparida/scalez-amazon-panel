@@ -52,6 +52,8 @@ import { PieChart } from "react-minimal-pie-chart";
 
 function App() {
   const [data, setData] = useState({});
+  const [drawerData, setDrawerData] = useState([]);
+  const [drawerWord, setDrawerWord] = useState("");
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
@@ -83,11 +85,29 @@ function App() {
 
   const handleOpen = (type, i) => {
     if (type === "p") {
-      if (data["Positive"].keywords[i]) onOpen();
+      if (data["Positive"].keywords[i]) {
+        setDrawerData(data["Positive"].keywords[i][2]);
+        setDrawerWord(
+          `${data["Positive"].keywords[i][0]} (${data["Positive"].keywords[i][1]})`
+        );
+        onOpen();
+      }
     } else if (type === "x") {
-      if (data["Neutral"].keywords[i]) onOpen();
+      if (data["Neutral"].keywords[i]) {
+        setDrawerData(data["Neutral"].keywords[i][2]);
+        setDrawerWord(
+          `${data["Neutral"].keywords[i][0]} (${data["Neutral"].keywords[i][1]})`
+        );
+        onOpen();
+      }
     } else if (type === "n") {
-      if (data["Negative"].keywords[i]) onOpen();
+      if (data["Negative"].keywords[i]) {
+        setDrawerData(data["Negative"].keywords[i][2]);
+        setDrawerWord(
+          `${data["Negative"].keywords[i][0]} (${data["Negative"].keywords[i][1]})`
+        );
+        onOpen();
+      }
     }
   };
 
@@ -273,7 +293,7 @@ function App() {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Keyword: water (73)</DrawerHeader>
+          <DrawerHeader>Keyword: {drawerWord}</DrawerHeader>
 
           <DrawerBody>
             <Box
@@ -284,48 +304,30 @@ function App() {
               p={5}
             >
               <Accordion allowToggle>
-                <AccordionItem>
-                  <h2>
-                    <AccordionButton>
-                      <Box flex="1" textAlign="left">
-                        Name (Rating)
-                      </Box>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                  </AccordionPanel>
-                </AccordionItem>
-
-                <AccordionItem>
-                  <h2>
-                    <AccordionButton>
-                      <Box flex="1" textAlign="left">
-                        Name (Rating)
-                      </Box>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                  </AccordionPanel>
-                </AccordionItem>
+                {drawerData.map((e) => (
+                  <AccordionItem>
+                    <h2>
+                      <AccordionButton>
+                        <Box flex="1" textAlign="left">
+                          {`${e.name} (${e.rating} stars)`}
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel pb={4}>{e.review}</AccordionPanel>
+                  </AccordionItem>
+                ))}
               </Accordion>
             </Box>
           </DrawerBody>
 
           <DrawerFooter>
-            <Button variant="outline" mr={3} onClick={onClose}>
+            {/* <Button variant="outline" mr={3} onClick={onClose}>
               Cancel
+            </Button> */}
+            <Button colorScheme="teal" onClick={onClose}>
+              Close
             </Button>
-            <Button colorScheme="blue">Save</Button>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
