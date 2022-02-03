@@ -8,7 +8,7 @@ import App from "./pages/App";
 export default function Router() {
   const tokenDate = Date.parse(Cookies.get("tokenDate"));
   if (
-    Date.parse(new Date()) - tokenDate > 2 * 60 * 60 * 1000 ||
+    Date.parse(new Date()) - tokenDate > 15 * 60 * 1000 ||
     tokenDate === undefined ||
     tokenDate === null ||
     isNaN(tokenDate)
